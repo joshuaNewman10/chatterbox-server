@@ -1,7 +1,7 @@
 var app = {};
 $(document).ready(function() {
 // YOUR CODE HERE:
-  app.server = "https://api.parse.com/1/classes/chatterbox";
+  app.server = "http://127.0.0.1:3000/classes/room1";
   app.initialLoad = new Date(Date.now() - 10 * 60 * 1000).toISOString();
   app.messages = [];
   app.rooms = [];
@@ -10,7 +10,6 @@ $(document).ready(function() {
   app.friends = {};
 
   app.init = function() {
-
     app.fetch();
   };
 
@@ -50,9 +49,9 @@ $(document).ready(function() {
       var $user = $('<span class="username"></span>');
       $user.text(message.username);
 
-      var time = message.date;
-      var $timestamp = $('<span class="timestamp"></span>');
-      $timestamp.text(time.toLocaleDateString() + ' ' + time.toLocaleTimeString());
+      // var time = message.date;
+      // var $timestamp = $('<span class="timestamp"></span>');
+      // $timestamp.text(time.toLocaleDateString() + ' ' + time.toLocaleTimeString());
 
       // var $id = $('<span></span>');
       // $id.text(message.objectId);
@@ -68,7 +67,7 @@ $(document).ready(function() {
 
       var $fullMessage = $('<div class="chat"></div>');
       $fullMessage.append($user);
-      $fullMessage.append($timestamp);
+      // $fullMessage.append($timestamp);
       // $fullMessage.append($id);
       $fullMessage.append($messageHtml);
       messageContainer.prepend($fullMessage);
@@ -84,38 +83,30 @@ $(document).ready(function() {
   //  restrict with url + '?' + $.param({where: {createdAt: {__type: 'Date', iso: message.createdAt}}, ... }})
 
   app.fetch = function() {
-    var fetchFrom = app.messages.length > 0
-                            ? app.messages[app.messages.length - 1].createdAt
-                            : app.initialLoad;
-    var params =  $.param({
-      where: {
-        createdAt: {
-          $gt: {
-            __type: 'Date',
-            iso: fetchFrom
-          }
-        }
-      }
-    });
+    // var fetchFrom = app.messages.length > 0
+    //                         ? app.messages[app.messages.length - 1].createdAt
+    //                         : app.initialLoad;
+    // var params =  $.param({
+    // });
 
-    $.get(app.server, params, function (response) {
-      // console.log(response);
-      var results = _.filter(response.results, function(message) {
-        return message.text !== undefined && message.username !== undefined;
-      });
-      _.each(results, function (message) {
-        message.date = new Date(message.createdAt);
-      });
-      results.sort(function (a, b) {
-        if (a.date < b.date) {
-          return -1;
-        } else if (a.date > b.date) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-      app.messages = app.messages.concat(results);
+    $.get(app.server, function (response) {
+      var results = JSON.parse(response).results;
+      // var results = _.filter(response.results, function(message) {
+      //   return message.text !== undefined && message.username !== undefined;
+      // });
+      // _.each(results, function (message) {
+      //   message.date = new Date(message.createdAt);
+      // });
+      // results.sort(function (a, b) {
+      //   if (a.date < b.date) {
+      //     return -1;
+      //   } else if (a.date > b.date) {
+      //     return 1;
+      //   } else {
+      //     return 0;
+      //   }
+      // });
+      app.messages = app.messages.concat(response.results);
       app.displayMessages(results);
 
       var newRooms = _.pluck(results, 'roomname');

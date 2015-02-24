@@ -11,8 +11,9 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+
 var dataStore = {
-  '/classes/room1': {}
+  '/classes/room1': {'username':'JJ', 'text': 'Hello Node!', 'date': new Date()}
 };
 
 var requestHandler = function(request, response) {
@@ -30,7 +31,8 @@ var requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your codee
-  //
+  console.log('request', request.method, request.url);
+
   var statusCode = 200;
   var serverResponse = {results: []};
 
@@ -50,7 +52,7 @@ var requestHandler = function(request, response) {
 
 
   var processData = function(data) {
-    dataStore[request.url] = JSON.parse(data);
+    dataStore[request.url] = JSON.parse(data); //fix this for goodness sake
   }
 
   //response decision conditional
@@ -63,7 +65,7 @@ var requestHandler = function(request, response) {
     };
   }
   else { //for get requests
-    if (dataStore[request.url] || request.url === '/classes/messages') {
+    if (dataStore[request.url] || request.url === '/classes/messages') { //fix hardcoding
       serverResponse.results.push(dataStore[request.url]);
     } else {
       statusCode = 404;
