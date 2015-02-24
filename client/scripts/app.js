@@ -50,7 +50,6 @@ $(document).ready(function() {
       return app.storedMessages[message.createdAt] === undefined ? true : false;
     });
 
-    console.log(undisplayedMessages, app.storedMessages);
 
     messages.forEach(function(result) {
       app.storedMessages[result.createdAt] = result;
