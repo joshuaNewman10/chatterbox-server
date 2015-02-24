@@ -12,6 +12,7 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 var dataStore = {
+  '/classes/room1': {}
 };
 
 var requestHandler = function(request, response) {
@@ -29,6 +30,7 @@ var requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your codee
+  //
   var statusCode = 200;
   var serverResponse = {results: []};
 
@@ -37,18 +39,21 @@ var requestHandler = function(request, response) {
 
       request.on('data', function(data){
           body += data;
-      }).on('end', function(){
+      });
+      request.on('end', function(){
           processData(body);
       });
   }
 
   console.log("Serving request type " + request.method + " for url " + request.url);
   // The outgoing status.
-  //
+
+
   var processData = function(data) {
-    dataStore[request.url] = data;
+    dataStore[request.url] = JSON.parse(data);
   }
 
+  //response decision conditional
   if ( request.method === 'POST' ) {
      getData();
     statusCode = 201;
@@ -58,7 +63,11 @@ var requestHandler = function(request, response) {
     };
   }
   else { //for get requests
+    if (dataStore[request.url] || request.url === '/classes/messages') {
       serverResponse.results.push(dataStore[request.url]);
+    } else {
+      statusCode = 404;
+    }
   }
 
   // See the note below about CORS headers.
@@ -102,4 +111,4 @@ var defaultCorsHeaders = {
   "access-control-max-age": 10 // Seconds.
 };
 
-exports.handleRequest = requestHandler;
+exports.requestHandler = requestHandler;

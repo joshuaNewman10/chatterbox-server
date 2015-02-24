@@ -1,4 +1,4 @@
-var handler = require('../request-handler');
+var handler = require('../request-handler.js');
 var expect = require('../../node_modules/chai/chai').expect;
 var basicServer = require('../basic-server').server;
 var stubs = require('./Stubs');
@@ -21,6 +21,7 @@ describe('Node Server Request Listener Function', function() {
     handler.requestHandler(req, res);
 
     expect(res._responseCode).to.equal(200);
+    console.log(res._responseCode);
     expect(res._ended).to.equal(true);
   });
 
@@ -69,11 +70,10 @@ describe('Node Server Request Listener Function', function() {
 
     // Expect 201 Created response status
     expect(res._responseCode).to.equal(201);
-
     // Testing for a newline isn't a valid test
     // TODO: Replace with with a valid test
     expect(res._data).to.equal(JSON.stringify({
-      statusCode: statusCode,
+      statusCode: 201,
       description: 'made a file :)'
     }));
     expect(res._ended).to.equal(true);
