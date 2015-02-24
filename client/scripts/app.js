@@ -4,6 +4,7 @@ $(document).ready(function() {
   app.server = "http://127.0.0.1:3000/classes/room1";
   app.initialLoad = new Date(Date.now() - 10 * 60 * 1000).toISOString();
   app.messages = [];
+  app.storedMessages = {};
   app.rooms = [];
   app.username = '';
   app.currentRoom = '';
@@ -35,22 +36,33 @@ $(document).ready(function() {
   };
 
   //Display Code
-  app.displayMessages = function (undisplayedMessages) {
+  app.displayMessages = function (messages) {
     var messageContainer = $('.messages');
 
-    if (app.currentRoom) {
-      undisplayedMessages = _.filter(undisplayedMessages, function(message) {
-        return message.roomname === app.currentRoom;
-      });
-    }
+    // if (app.currentRoom) {
+    //   undisplayedMessages = _.filter(undisplayedMessages, function(message) {
+    //     return message.roomname === app.currentRoom;
+    //   });
+    // }
+    //
+
+    var undisplayedMessages = _.filter(messages, function(message) {
+      return app.storedMessages[message.createdAt] === undefined ? true : false;
+    });
+
+    console.log(undisplayedMessages, app.storedMessages);
+
+    messages.forEach(function(result) {
+      app.storedMessages[result.createdAt] = result;
+    });
+
 
     _.each(undisplayedMessages, function (message) {
-
       var $user = $('<span class="username"></span>');
       $user.text(message.username);
 
-      // var time = message.date;
-      // var $timestamp = $('<span class="timestamp"></span>');
+      var time = message.date;
+      var $timestamp = $('<span class="timestamp"></span>');
       // $timestamp.text(time.toLocaleDateString() + ' ' + time.toLocaleTimeString());
 
       // var $id = $('<span></span>');
@@ -75,40 +87,11 @@ $(document).ready(function() {
   };
 
 
-  // Get our data
-  // Expect response to be:
-  //  { results:
-  //      [ { keys are: createdAt, objectId, roomname, text, updatedAt, username}, ...]
-  //  }
-  //  restrict with url + '?' + $.param({where: {createdAt: {__type: 'Date', iso: message.createdAt}}, ... }})
-
   app.fetch = function() {
-    // var fetchFrom = app.messages.length > 0
-    //                         ? app.messages[app.messages.length - 1].createdAt
-    //                         : app.initialLoad;
-    // var params =  $.param({
-    // });
-
     $.get(app.server, function (response) {
       var results = JSON.parse(response).results;
-      // var results = _.filter(response.results, function(message) {
-      //   return message.text !== undefined && message.username !== undefined;
-      // });
-      // _.each(results, function (message) {
-      //   message.date = new Date(message.createdAt);
-      // });
-      // results.sort(function (a, b) {
-      //   if (a.date < b.date) {
-      //     return -1;
-      //   } else if (a.date > b.date) {
-      //     return 1;
-      //   } else {
-      //     return 0;
-      //   }
-      // });
-      app.messages = app.messages.concat(response.results);
+      app.messages = app.messages.concat(results);
       app.displayMessages(results);
-
       var newRooms = _.pluck(results, 'roomname');
       newRooms = _.filter(newRooms, function (room) {
         return room; //filter undefined and empty string

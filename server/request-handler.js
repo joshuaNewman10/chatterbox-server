@@ -13,7 +13,7 @@ this file and include it in basic-server.js so that it actually works.
 **************************************************************/
 
 var dataStore = {
-  '/classes/room1': {'username':'JJ', 'text': 'Hello Node!', 'date': new Date()}
+  '/classes/room1': {'username':'JJ', 'text': 'Hello Node!', 'createdAt': new Date()}
 };
 
 var requestHandler = function(request, response) {
