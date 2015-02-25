@@ -89,6 +89,7 @@ $(document).ready(function() {
   app.fetch = function() {
     $.get(app.server, function (response) {
       var results = JSON.parse(response).results;
+      console.log(results);
       app.messages = app.messages.concat(results);
       app.displayMessages(results);
       var newRooms = _.pluck(results, 'roomname');
