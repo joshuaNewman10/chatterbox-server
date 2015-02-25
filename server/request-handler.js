@@ -45,10 +45,6 @@ var sendResponse = function(response, data, statusCode) {
 
 var requestHandler = function(request, response) {
 
-
-  console.log("Serving request type " + request.method + " for url " + request.url);
-
-
   if ( !actions[request.method] ) {
     sendResponse(response, 'hello world', 404);
   } else {
@@ -60,3 +56,4 @@ var requestHandler = function(request, response) {
 
 
 exports.requestHandler = requestHandler;
+exports.sendResponse = sendResponse;
